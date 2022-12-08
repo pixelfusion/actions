@@ -1,0 +1,43 @@
+name: Build Docker Image
+description: Build and push docker image
+runs:
+  using: composite
+  steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-2
+        mask-aws-account-id: false
+    - name: Login to Amazon ECR
+      id: login-ecr-pf
+      uses: aws-actions/amazon-ecr-login@v1
+    - name: Build & Push
+      shell: bash
+      env:
+        DOCKER_IMAGE: ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.AWS_REPOSITORY }}:${{ env.VERSION }}
+        SENTRY_RELEASE: ${{ env.SENTRY_PROJECT }}@${{ env.VERSION }}
+      run: |
+        echo $VERSION > ./public/version.txt
+        docker build -t $DOCKER_IMAGE .
+        docker push $DOCKER_IMAGE
+        cat <<EOT >> build_outputs
+        DOCKER_IMAGE=$DOCKER_IMAGE
+        SENTRY_RELEASE=$SENTRY_RELEASE
+        EOT
+    - name: Logout of Amazon ECR
+      shell: bash
+      run: docker logout ${{ steps.login-ecr-pf.outputs.registry }}
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: outputs
+        path: build_outputs
+    - name: Notify Slack
+      uses: voxmedia/github-action-slack-notify-build@v1
+      if: failure()
+      with:
+        channel: ${{ env.SLACK_CHANNEL }}
+        status: Failed to release
+        color: '#dd0000'
