@@ -22,18 +22,11 @@ runs:
         echo $VERSION > ./public/version.txt
         docker build -t $DOCKER_IMAGE .
         docker push $DOCKER_IMAGE
-        cat <<EOT >> build_outputs
-        DOCKER_IMAGE=$DOCKER_IMAGE
-        SENTRY_RELEASE=$SENTRY_RELEASE
-        EOT
+        echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
+        echo "SENTRY_RELEASE=$SENTRY_RELEASE" >> $GITHUB_ENV
     - name: Logout of Amazon ECR
       shell: bash
       run: docker logout ${{ steps.login-ecr-pf.outputs.registry }}
-    - name: Publish artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: outputs
-        path: build_outputs
     - name: Notify Slack
       uses: voxmedia/github-action-slack-notify-build@v1
       if: failure()
