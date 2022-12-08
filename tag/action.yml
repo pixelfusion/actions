@@ -1,5 +1,9 @@
 name: Tag
 description: Setup and run semantic-release
+outputs:
+  version:
+    description: "Tag of released version"
+    value: ${{ steps.result.outputs.version }}
 runs:
   using: composite
   steps:
@@ -25,7 +29,9 @@ runs:
           echo "version.txt was not created, release aborted" 1>&2;
           exit 1;
         fi
-    - name: Persist release tag
+    - id: result
+      name: Persist release tag
       shell: bash
       run: |
         echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+        echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
