@@ -18,6 +18,13 @@ runs:
     - name: Release
       shell: bash
       run: npx semantic-release
+    - name: Validate release tag
+      shell: bash
+      run: >
+        if [[ ! -f version.txt ]]; then
+          echo "version.txt was not created, release aborted" 1>&2;
+          exit 1;
+        fi
     - name: Persist release tag
       shell: bash
       run: |
