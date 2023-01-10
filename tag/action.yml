@@ -15,8 +15,11 @@ runs:
         node-version: 18
     - name: Install node modules
       shell: bash
+      # Note: Remove the alias line once https://github.com/semantic-release/github/pull/487 is merged
       run: |-
-        npm install -g semantic-release \
+        npm install -g \
+          @semantic-release/github@npm:@achingbrain/semantic-release-github@0.0.1 \
+          semantic-release \
           @semantic-release/exec \
           @semantic-release/git
     - name: Release
