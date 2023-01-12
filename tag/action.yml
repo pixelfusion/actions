@@ -24,7 +24,9 @@ runs:
           @semantic-release/git
     - name: Release
       shell: bash
-      run: npx semantic-release
+      # Note: semantic-release can partially fail, but still tag (that's important)
+      # so make a best effort to continue in case of error
+      run: npx semantic-release || true
     - name: Validate release tag
       shell: bash
       run: >
