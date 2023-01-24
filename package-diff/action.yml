@@ -1,0 +1,41 @@
+name: Package lock diff.
+description: Show package lock diff in comment
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install lock diff
+      shell: bash
+      run: npm install -g lock-diff
+
+    - name: Prepare package lock diff
+      shell: bash
+      run: |
+        git show ${{ github.event.pull_request.base.sha }}:package-lock.json > package-lock.old.json
+        lock-diff package-lock.old.json package-lock.json --format=text >> package_diff.md || true
+
+    - name: Add comment to PR
+      shell: bash
+      run: >
+        if [[ -s package_diff.md ]]; then
+          echo "### Package lock diff" > body.md
+          echo "<pre>" >> body.md
+          echo "$(cat package_diff.md)" >> body.md
+          echo "</pre>" >> body.md
+          jq -n --arg body "$(cat body.md)" '{body: $body}' > package_diff.json
+          curl \
+            -X POST \
+            ${{ github.event.pull_request.comments_url }} \
+            -H "Accept: application/vnd.github.v3.raw+json" \
+            -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
+            --data '@package_diff.json'
+        fi
