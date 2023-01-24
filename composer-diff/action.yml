@@ -1,0 +1,39 @@
+name: Composer lock diff.
+description: Show composer lock diff in comment
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP with composer v2
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        tools: composer:v2
+        coverage: none # Disable xDebug
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install composer lock diff
+      shell: bash
+      run: composer global require davidrjonas/composer-lock-diff:^1.7
+
+    - name: Run composer lock diff
+      shell: bash
+      run: ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --md >> composer_diff.md
+
+    - name: Add comment to PR
+      shell: bash
+      run: >
+        if [[ -s composer_diff.md ]]; then
+          echo "### Composer lock diff" > body.md
+          echo "$(cat composer_diff.md)" >> body.md
+          jq -n --arg body "$(cat body.md)" '{body: $body}' > composer_diff.json
+          curl \
+            -X POST \
+            ${{ github.event.pull_request.comments_url }} \
+            -H "Accept: application/vnd.github.v3.raw+json" \
+            -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
+            --data '@composer_diff.json'
+        fi
