@@ -1,5 +1,10 @@
 name: Composer lock diff.
 description: Show composer lock diff in comment
+inputs:
+  work-dir:
+    description: 'Directory to run the diff in'
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -21,7 +26,7 @@ runs:
 
     - name: Run composer lock diff
       shell: bash
-      run: ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --md >> composer_diff.md
+      run: ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }}${{ work-dir }} --to ${{ github.event.pull_request.head.sha }}${{ work-dir }} --md >> composer_diff.md
 
     - name: Add comment to PR
       shell: bash
