@@ -25,8 +25,8 @@ runs:
     - name: Prepare package lock diff
       shell: bash
       run: |
-        git show ${{ github.event.pull_request.base.sha }}:${{ work-dir }}package-lock.json > package-lock.old.json
-        lock-diff package-lock.old.json ${{ work-dir }}package-lock.json --format=text >> package_diff.md || true
+        git show ${{ github.event.pull_request.base.sha }}:${{ inputs.work-dir }}package-lock.json > package-lock.old.json
+        lock-diff package-lock.old.json ${{ inputs.work-dir }}package-lock.json --format=text >> package_diff.md || true
 
     - name: Add comment to PR
       shell: bash
