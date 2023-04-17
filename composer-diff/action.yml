@@ -28,8 +28,10 @@ runs:
       shell: bash
       run: |
         if [ ! -v github.event.inputs.work-dir ]; then
+          echo "work-dir is not set"
           ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --md >> composer_diff.md
         else
+          echo "work-dir is set"
           ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }}/${{ inputs.work-dir }} --to ${{ github.event.pull_request.head.sha }}/${{ inputs.work-dir }} --md >> composer_diff.md
         fi
 
