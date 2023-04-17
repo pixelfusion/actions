@@ -25,7 +25,7 @@ runs:
     - name: Prepare package lock diff
       shell: bash
       run: |
-        if [ ! -v github.event.inputs.work-dir ]; then
+        if [ -v github.event.inputs.work-dir ]; then
           echo "work-dir is not set"
           git show ${{ github.event.pull_request.base.sha }}:package-lock.json > package-lock.old.json
           lock-diff package-lock.old.json package-lock.json --format=text >> package_diff.md || true
