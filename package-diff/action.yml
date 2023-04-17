@@ -26,11 +26,9 @@ runs:
       shell: bash
       run: |
         if [ -z "${{ inputs.work-dir }}" ]; then
-          echo "work-dir is not set"
           git show ${{ github.event.pull_request.base.sha }}:package-lock.json > package-lock.old.json
           lock-diff package-lock.old.json package-lock.json --format=text >> package_diff.md || true
         else
-          echo "work-dir is set"
           git show ${{ github.event.pull_request.base.sha }}:${{ inputs.work-dir }}/package-lock.json > package-lock.old.json
           lock-diff package-lock.old.json ${{ inputs.work-dir }}/package-lock.json --format=text >> package_diff.md || true
         fi
