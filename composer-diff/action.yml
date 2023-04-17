@@ -26,7 +26,12 @@ runs:
 
     - name: Run composer lock diff
       shell: bash
-      run: ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }}${{ inputs.work-dir }} --to ${{ github.event.pull_request.head.sha }}${{ inputs.work-dir }} --md >> composer_diff.md
+      run: |
+        if [ ! -v github.event.inputs.work-dir ]; then
+          ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --md >> composer_diff.md
+        else
+          ~/.composer/vendor/bin/composer-lock-diff --from ${{ github.event.pull_request.base.sha }}/${{ inputs.work-dir }} --to ${{ github.event.pull_request.head.sha }}/${{ inputs.work-dir }} --md >> composer_diff.md
+        fi
 
     - name: Add comment to PR
       shell: bash
