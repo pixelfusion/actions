@@ -1,5 +1,10 @@
 name: Package lock diff.
 description: Show package lock diff in comment
+inputs:
+  work-dir:
+    description: 'Directory to run the diff in'
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -20,8 +25,13 @@ runs:
     - name: Prepare package lock diff
       shell: bash
       run: |
-        git show ${{ github.event.pull_request.base.sha }}:package-lock.json > package-lock.old.json
-        lock-diff package-lock.old.json package-lock.json --format=text >> package_diff.md || true
+        if [ ! -v github.event.inputs.work-dir ]; then
+          git show ${{ github.event.pull_request.base.sha }}:package-lock.json > package-lock.old.json
+          lock-diff package-lock.old.json package-lock.json --format=text >> package_diff.md || true
+        else
+          git show ${{ github.event.pull_request.base.sha }}:${{ inputs.work-dir }}/package-lock.json > package-lock.old.json
+          lock-diff package-lock.old.json ${{ inputs.work-dir }}/package-lock.json --format=text >> package_diff.md || true
+        fi
 
     - name: Add comment to PR
       shell: bash
