@@ -42,7 +42,7 @@ runs:
       shell: bash
       run: docker logout ${{ steps.login-ecr-pf.outputs.registry }}
     - name: Notify Slack
-      uses: voxmedia/github-action-slack-notify-build@v1
+      uses: justinr636/github-action-slack-notify-build@v1
       if: failure()
       with:
         channel: ${{ env.SLACK_CHANNEL }}
