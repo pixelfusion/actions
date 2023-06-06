@@ -57,5 +57,5 @@ runs:
       shell: bash
       run: |
         echo "docker_image=${{ env.DOCKER_IMAGE }}" >> $GITHUB_OUTPUT
-        echo "docker_image_latest=${{ env.DOCKER_IMAGE_LATEST }}" >> $DOCKER_IMAGE_LATEST
+        echo "docker_image_latest=${{ env.DOCKER_IMAGE_LATEST }}" >> $GITHUB_OUTPUT
         echo "sentry_release=${{ env.SENTRY_RELEASE }}" >> $GITHUB_OUTPUT
