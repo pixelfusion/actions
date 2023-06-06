@@ -7,8 +7,9 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Detect github environment
+    - name: "Detect github environment"
       id: detect_environment
+      shell: bash
       run: |
         branch=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
         echo release_branch=$branch >> $GITHUB_OUTPUT
