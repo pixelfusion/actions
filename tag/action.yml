@@ -1,5 +1,14 @@
 name: Tag
 description: Setup and run semantic-release
+inputs:
+  checkout:
+    description: 'Set to true / false to checkout the project at the same time'
+    required: false
+    default: 'true'
+  node_version:
+    description: 'Node version to setup. Can set to blank string to disable node setup'
+    required: false
+    default: '18'
 outputs:
   version:
     description: "Tag of released version"
@@ -9,16 +18,17 @@ runs:
   steps:
     - name: Checkout
       uses: actions/checkout@v3
+      if: ${{ inputs.checkout == 'true' }}
     - name: Setup Node.js
       uses: actions/setup-node@v3
+      if: ${{ inputs.node_version != '' }}
       with:
-        node-version: 18
+        node-version: ${{ inputs.node_version }}
     - name: Install node modules
       shell: bash
       # Note: Remove the alias line once https://github.com/semantic-release/github/pull/487 is merged
       run: |-
         npm install -g \
-          @semantic-release/github@npm:@achingbrain/semantic-release-github@0.0.1 \
           semantic-release \
           @semantic-release/exec \
           @semantic-release/git
