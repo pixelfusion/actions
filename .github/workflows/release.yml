@@ -1,0 +1,14 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release
+        uses: ./tag

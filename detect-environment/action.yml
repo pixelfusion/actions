@@ -1,0 +1,23 @@
+name: Detect environment
+description: Pick an environment to use
+outputs:
+  environment:
+    description: "Environment name to use. E.g. uat/production"
+    value: ${{ steps.detect_environment.outputs.environment }}
+runs:
+  using: composite
+  steps:
+    - name: "Detect github environment"
+      id: detect_environment
+      shell: bash
+      run: |
+        branch=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
+        echo release_branch=$branch >> $GITHUB_OUTPUT
+        if [[ $branch == 'master' ]]; then
+          echo environment=prod >> $GITHUB_OUTPUT
+        elif [[ $branch == 'release/uat' ]]; then
+          echo environment=uat >> $GITHUB_OUTPUT
+        else
+          echo "Wrong github branch used"
+          exit 1
+        fi

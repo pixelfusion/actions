@@ -1,0 +1,35 @@
+name: Detect changes
+description: Detects if a folder is modified on merge
+inputs:
+  work-dir:
+    description: 'Directory to verify'
+    required: false
+    default: ''
+outputs:
+  changes:
+    description: "Flag declaring any changes in the work-dir"
+    value: ${{ steps.check_changes.outputs.changes }}
+runs:
+  using: composite
+  steps:
+    - name: Detect application changes
+      shell: bash
+      id: check_changes
+      run: |
+        # Pull extra git data from source
+        release_branch=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
+        git fetch origin $release_branch:refs/remotes/origin/$release_branch
+        
+        # Check for directory changes
+        changes=false
+        if [ -z "${{ inputs.work-dir }}" ]; then
+          DIFF=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+        else
+          DIFF=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- ${{ inputs.work-dir }})
+        fi
+        if [ -n "$DIFF" ]; then
+          changes=true
+        fi
+        
+        # Output
+        echo "changes=$changes" >> $GITHUB_OUTPUT
