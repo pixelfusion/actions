@@ -1,0 +1,28 @@
+name: Tests
+on:
+  push:
+    branches:
+      - '!master'
+  pull_request:
+    branches:
+      - '**'
+jobs:
+  actions:
+    name: Lint actions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install action-validator with asdf
+        uses: asdf-vm/actions/install@v2
+        with:
+          tool_versions: |
+            action-validator 0.5.1
+
+      - name: Lint Actions
+        run: |
+          find . -type f \( -iname \*.yaml -o -iname \*.yml \) \
+            | xargs -I {} action-validator --verbose {}
