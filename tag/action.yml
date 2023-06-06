@@ -31,7 +31,8 @@ runs:
         npm install -g \
           semantic-release \
           @semantic-release/exec \
-          @semantic-release/git
+          @semantic-release/git \
+          semantic-release-major-tag
     - name: Release
       shell: bash
       # Note: semantic-release can partially fail, but still tag (that's important)
