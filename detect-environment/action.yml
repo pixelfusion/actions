@@ -4,6 +4,9 @@ outputs:
   environment:
     description: "Environment name to use. E.g. uat/production"
     value: ${{ steps.detect_environment.outputs.environment }}
+  release_branch:
+    description: "Release branch"
+    value: ${{ steps.detect_environment.outputs.release_branch }}
 runs:
   using: composite
   steps:
@@ -14,10 +17,10 @@ runs:
         branch=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
         echo release_branch=$branch >> $GITHUB_OUTPUT
         if [[ $branch == 'master' ]]; then
-          environment=production
+          echo environment=production >> $GITHUB_OUTPUT
         elif [[ $branch == release/* ]]; then
           environment_version=${branch#release/}
-          environment=$environment_version
+          echo environment=$environment_version >> $GITHUB_OUTPUT
         else
           echo "Wrong github branch used"
           exit 1
