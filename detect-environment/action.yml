@@ -4,6 +4,9 @@ outputs:
   environment:
     description: "Environment name to use. E.g. uat/production"
     value: ${{ steps.detect_environment.outputs.environment }}
+  release_branch:
+    description: "Release branch"
+    value: ${{ steps.detect_environment.outputs.release_branch }}
 runs:
   using: composite
   steps:
