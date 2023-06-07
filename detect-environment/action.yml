@@ -17,10 +17,10 @@ runs:
         branch=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
         echo release_branch=$branch >> $GITHUB_OUTPUT
         if [[ $branch == 'master' ]]; then
-          environment=production
+          echo environment=production >> $GITHUB_OUTPUT
         elif [[ $branch == release/* ]]; then
           environment_version=${branch#release/}
-          environment=$environment_version
+          echo environment=$environment_version >> $GITHUB_OUTPUT
         else
           echo "Wrong github branch used"
           exit 1
