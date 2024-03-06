@@ -20,7 +20,7 @@ runs:
 
     - name: Install lock diff
       shell: bash
-      run: npm install -g lock-diff
+      run: npm install -g https://github.com/stevelacey/lock-diff
 
     - name: Prepare package lock diff
       shell: bash
