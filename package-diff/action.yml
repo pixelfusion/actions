@@ -5,13 +5,18 @@ inputs:
     description: 'Directory to run the diff in'
     required: false
     default: ''
+  node_version:
+    description: 'Node version to setup. Can set to blank string to disable node setup'
+    required: false
+    default: '20'
 runs:
   using: composite
   steps:
     - name: Setup Node.js
       uses: actions/setup-node@v4
+      if: ${{ inputs.node_version != '' }}
       with:
-        node-version: 20
+        node-version: ${{ inputs.node_version }}
 
     - name: Checkout
       uses: actions/checkout@v4
