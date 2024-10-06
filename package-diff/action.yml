@@ -38,9 +38,28 @@ runs:
           lock-diff package-lock.old.json ${{ inputs.work-dir }}/package-lock.json --format=text >> package_diff.md || true
         fi
 
+    - name: Delete existing comment on PR
+      shell: bash
+      run: |
+        existing_comment_id=$(curl -s \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
+          ${{ github.event.pull_request.comments_url }} \
+          | jq '.[] | select(.user.login=="github-actions[bot]") | select(.body|startswith("### Package lock diff")) | .id')
+
+        if [ -n "$existing_comment_id" ]; then
+          echo "Found existing comment with ID: $existing_comment_id. Deleting it."
+          curl -X DELETE \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/issues/comments/$existing_comment_id
+        else
+          echo "No existing comment found."
+        fi
+
     - name: Add comment to PR
       shell: bash
-      run: >
+      run: |
         if [[ -s package_diff.md ]]; then
           echo "### Package lock diff" > body.md
           echo "<pre>" >> body.md
