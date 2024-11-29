@@ -58,7 +58,7 @@ runs:
         if [[ -s composer_diff.md ]]; then
           echo "### Composer lock diff" > body.md
           echo "$(cat composer_diff.md)" >> body.md
-          jq -n --arg body "$(cat body.md)" '{body: $body}' > composer_diff.json
+          jq -n --rawfile body body.md '{body: $body}' > composer_diff.json
           curl \
             -X POST \
             ${{ github.event.pull_request.comments_url }} \
