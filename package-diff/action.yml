@@ -65,7 +65,7 @@ runs:
           echo "<pre>" >> body.md
           echo "$(cat package_diff.md)" >> body.md
           echo "</pre>" >> body.md
-          jq -n --arg body "$(cat body.md)" '{body: $body}' > package_diff.json
+          jq -n --rawfile body body.md '{body: $body}' > package_diff.json
           curl \
             -X POST \
             ${{ github.event.pull_request.comments_url }} \
