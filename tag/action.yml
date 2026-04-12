@@ -26,7 +26,6 @@ runs:
         node-version: ${{ inputs.node_version }}
     - name: Install node modules
       shell: bash
-      # Note: Remove the alias line once https://github.com/semantic-release/github/pull/487 is merged
       run: |-
         npm install -g \
           semantic-release \
